@@ -1,4 +1,34 @@
 # 4. Aggregation 
+## 13List the total hours booked per named facility
+https://pgexercises.com/questions/aggregates/fachours3.html
+```
+select b.facid, f.name, sum(slots)*0.50 as hours 
+from cd.bookings b 
+left join cd.facilities f on b.facid = f.facid 
+group by b.facid, f.name order by b.facid;
+```
+
+## 14 List each member's first booking after September 1st 2012
+https://pgexercises.com/questions/aggregates/nbooking.html
+```
+select surname, firstname, b.memid, min(starttime) from cd.bookings b 
+left join cd.members m on m.memid=b.memid 
+where starttime > '2012-09-01' group by b.memid, surname, firstname order by memid;
+```
+
+## 15 Produce a list of member names, with each row containing the total member count 
+https://pgexercises.com/questions/aggregates/countmembers.html
+```
+select (select count(*) from cd.members) as count, firstname, surname
+from cd.members order by joindate
+```
+
+## 16 Produce a numbered list of members
+https://pgexercises.com/questions/aggregates/nummembers.html
+```
+select row_number() OVER(), firstname, surname from cd.members;
+```
+
 ## 17 Output the facility id that has the highest number of slots booked, again
 https://pgexercises.com/questions/aggregates/fachours4.html
 ```
@@ -8,8 +38,18 @@ https://pgexercises.com/questions/aggregates/fachours4.html
   (   select max(x) from
     (  	select sum(slots) x from cd.bookings group by facid    )    ) ;
 ```
+
 ## 18 Rank members by (roudned) hours used
 https://pgexercises.com/questions/aggregates/rankmembers.html
 ```
- 
+SELECT firstname, surname, round(sum(slots)*.5,-1) AS hour, rank() OVER (ORDER BY round(sum(slots)*.5,-1) DESC) AS rank 
+FROM cd.bookings b 
+LEFT JOIN cd.members m ON b.memid=m.memid
+GROUP BY firstname, surname, b.memid ORDER BY rank, surname, firstname;
+```
+
+## 19 Find the top three revenue generating facilities
+https://pgexercises.com/questions/aggregates/facrev3.html
+```
+
 ```
