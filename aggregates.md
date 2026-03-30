@@ -1,5 +1,5 @@
 # 4. Aggregation 
-## 13List the total hours booked per named facility
+## 13 List the total hours booked per named facility
 https://pgexercises.com/questions/aggregates/fachours3.html
 ```
 select b.facid, f.name, sum(slots)*0.50 as hours 
@@ -51,5 +51,37 @@ GROUP BY firstname, surname, b.memid ORDER BY rank, surname, firstname;
 ## 19 Find the top three revenue generating facilities
 https://pgexercises.com/questions/aggregates/facrev3.html
 ```
+select name, rank() OVER (order by sum(cost) desc) as rank from (
+  select name, 
+	(
+  	CASE WHEN memid=0 THEN slots*guestcost
+  	ELSE slots*membercost
+  	END
+	) AS cost
+	from cd.bookings b 
+	LEFT JOIN cd.facilities f ON b.facid=f.facid
+  ) 
+group by name
+order by rank
+limit 3;
+```
 
+## 20 Classify facilities by value
+https://pgexercises.com/questions/aggregates/classify.html
+```
+select name, (case rev when 1 then 'high' when 2 then 'average' else 'low' END) as revenue 
+FROM(
+	select name, ntile(3) OVER (order by sum(cost) desc) as rev from (
+  		select name, 
+			(
+		  	CASE WHEN memid=0 THEN slots*guestcost
+		  	ELSE slots*membercost
+		  	END
+			) AS cost
+			from cd.bookings b 
+			LEFT JOIN cd.facilities f ON b.facid=f.facid
+	  	) 
+	group by name
+    order by rev, name
+);
 ```
