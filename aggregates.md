@@ -106,3 +106,9 @@ LEFT JOIN cd.facilities f ON b.facid=f.facid
 group by name, monthlymaintenance, initialoutlay
 order by name;
 ```
+
+## 22 Calculate a rolling average of total revenue
+https://pgexercises.com/questions/aggregates/rollingavg.html
+```
+select extract(starttime, starttime- interval '14days ' from cd.bookings;
+```
