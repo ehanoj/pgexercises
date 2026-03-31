@@ -71,7 +71,8 @@ https://pgexercises.com/questions/aggregates/classify.html
 ```
 select name, (case rev when 1 then 'high' when 2 then 'average' else 'low' END) as revenue 
 FROM(
-	select name, ntile(3) OVER (order by sum(cost) desc) as rev from (
+	select name, ntile(3) OVER (order by sum(cost) desc) as rev from
+	(
   		select name, 
 			(
 		  	CASE WHEN memid=0 THEN slots*guestcost
@@ -80,8 +81,28 @@ FROM(
 			) AS cost
 			from cd.bookings b 
 			LEFT JOIN cd.facilities f ON b.facid=f.facid
-	  	) 
+	) 
 	group by name
     order by rev, name
 );
+```
+
+## 21 Calculate the payback time for each facility
+https://pgexercises.com/questions/aggregates/payback.html
+```
+select name,  
+	(
+	initialoutlay/
+	 	(
+		 sum(
+  			CASE WHEN memid=0 THEN slots*guestcost
+  			ELSE slots*membercost
+  			END
+			)/3-monthlymaintenance
+		)
+	)
+from cd.bookings b 
+LEFT JOIN cd.facilities f ON b.facid=f.facid
+group by name, monthlymaintenance, initialoutlay
+order by name;
 ```
