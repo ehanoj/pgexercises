@@ -109,6 +109,51 @@ order by name;
 
 ## 22 Calculate a rolling average of total revenue
 https://pgexercises.com/questions/aggregates/rollingavg.html
+my own:
 ```
-select extract(starttime, starttime- interval '14days ' from cd.bookings;
+select ad, avg(c) from
+(
+	select a.date as ad, b.date as bd, avg(b.cost) as c from 
+	(
+		select distinct DATE(starttime) as date
+		from cd.bookings
+	) a,
+	(
+		select DATE(starttime) date,  
+	 	sum(
+  			CASE WHEN memid=0 THEN slots*guestcost
+  			ELSE slots*membercost
+  			END
+			) AS cost
+		from cd.bookings b 
+		LEFT JOIN cd.facilities f ON b.facid=f.facid
+		group by DATE(starttime)
+		order by DATE(starttime)
+	) b
+	WHERE a.date >= b.date AND a.date-14 <= b.date
+	group by a.date, b.date
+	order by a.date, b.date
+)
+where extract(MONTH from ad) = 8
+group by ad;
+```
+
+inspired by help:
+```
+select g.date, 
+	(
+		select sum(
+			CASE WHEN memid=0 THEN slots*guestcost
+  			ELSE slots*membercost
+  			END
+			) AS revenue
+		from cd.bookings b 
+		LEFT JOIN cd.facilities f ON b.facid=f.facid
+		WHERE g.date >= DATE(starttime) AND g.date-14 <= DATE(starttime)	
+	)/15 as rev
+from
+	(
+	select 	cast(generate_series(timestamp '2012-08-01',
+			'2012-08-31','1 day') as date) as date
+	) as g
 ```
