@@ -40,3 +40,10 @@ FROM generate_series(timestamp '2012-01-01', '2012-12-31','1 day') as d
 group by mo
 order by mo;
 ```
+
+# 7 Work out the number of days remaining in the month
+https://pgexercises.com/questions/date/daysremaining.html
+```
+select (date_trunc('month',ts.te) + interval '1 month') - date_trunc('day',ts.te) 
+from (select '2012-02-11 01:00:00'::timestamp as te) ts;
+```
