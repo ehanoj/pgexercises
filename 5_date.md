@@ -54,3 +54,9 @@ https://pgexercises.com/questions/date/endtimes.html
 select starttime,  (starttime + (slots*interval '30 mins')) as endtime 
 from cd.bookings order by endtime desc, starttime desc limit 10;
 ```
+# 9 Return a count of bookings for each month
+https://pgexercises.com/questions/date/bookingspermonth.html
+```
+select date_trunc('month', starttime) as m, count(*) from cd.bookings
+group by m order by m;
+```
