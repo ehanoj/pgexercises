@@ -47,3 +47,10 @@ https://pgexercises.com/questions/date/daysremaining.html
 select (date_trunc('month',ts.te) + interval '1 month') - date_trunc('day',ts.te) 
 from (select '2012-02-11 01:00:00'::timestamp as te) ts;
 ```
+
+# 8 Work out the end time of bookings
+https://pgexercises.com/questions/date/endtimes.html
+```
+select starttime,  (starttime + (slots*interval '30 mins')) as endtime 
+from cd.bookings order by endtime desc, starttime desc limit 10;
+```
