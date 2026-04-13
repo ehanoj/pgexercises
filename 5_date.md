@@ -60,3 +60,19 @@ https://pgexercises.com/questions/date/bookingspermonth.html
 select date_trunc('month', starttime) as m, count(*) from cd.bookings
 group by m order by m;
 ```
+
+# 10 Work out the utilisation percentage for each facility by month
+https://pgexercises.com/questions/date/utilisationpermonth.html
+```
+select f.name, date_trunc('month', b.starttime) as m, 
+  round(100*
+        sum(b.slots) /
+        (25 * EXTRACT(DAY FROM (
+            date_trunc('month', b.starttime) + INTERVAL '1 month' - INTERVAL '1 day'
+        )))::numeric
+        
+    ,1) AS utilization_rate
+from cd.bookings b
+left join cd.facilities f on f.facid=b.facid
+group by f.name, m order by f.name, m;
+```
