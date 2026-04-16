@@ -31,7 +31,7 @@ ORDER BY mid;
 https://pgexercises.com/questions/recursive/getupwardall.html
 ```
 WITH recursive mmb(mid, rec) AS (
-						SELECT memid, recommendedby FROM cd.members WHERE memid=12 OR memid=22 
+						SELECT memid, recommendedby FROM cd.members WHERE memid in (12,22) 
 						UNION ALL
 						SELECT mid, recommendedby FROM mmb
 						INNER JOIN cd.members ON memid=rec
